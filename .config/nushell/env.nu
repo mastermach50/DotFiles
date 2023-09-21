@@ -1,6 +1,6 @@
 # Nushell Environment Config File
 #
-# version = "0.84.0"
+# version = "0.85.0"
 
 def create_left_prompt [] {
     let home =  $nu.home-path
@@ -35,7 +35,7 @@ def create_left_prompt [] {
     let dir = ([
         ($env.PWD | str substring 0..($home | str length) | str replace $home "~"),
         ($env.PWD | str substring ($home | str length)..)
-        ] | str join)
+    ] | str join)
 
     # Add (Admin) to username if user is root
     let username = if (is-admin) {
@@ -62,10 +62,10 @@ def create_right_prompt [] {
     let time_segment = ([
         (ansi reset)
         (ansi magenta)
-        (date now | format date '%Y/%m/%d %r')
-        ] | str join # | str replace --regex --all "([/:])" $"(ansi green)${1}(ansi magenta)" |
-        # str replace --regex --all "([AP]M)" $"(ansi magenta_underline)${1}"
-        )
+        (date now | format date '%x %X %p') # try to respect user's locale
+    ] | str join # | str replace --regex --all "([/:])" $"(ansi green)${1}(ansi magenta)" |
+        # str replace --regex --all "([AP]M)" $"(ansi magenta_underline)${1}")
+    )
 
     # Last Exit Code
     let last_exit_code = if ($env.LAST_EXIT_CODE != 0) {([
@@ -79,7 +79,7 @@ def create_right_prompt [] {
         ($"($env.CMD_DURATION_MS)ms" | into duration)
     } else { "" }
 
-    ([$last_exit_code, (char space), $duration ,(char space), $time_segment] | str join)
+    ([$last_exit_code, (char space), $duration, (char space), $time_segment] | str join)
 }
 
 #Set the SHELL environment variable
@@ -87,6 +87,7 @@ $env.SHELL = "nu"
 
 # Use nushell functions to define your right and left prompt
 $env.PROMPT_COMMAND = {|| create_left_prompt }
+# FIXME: This default is not implemented in rust code as of 2023-09-08.
 $env.PROMPT_COMMAND_RIGHT = {|| create_right_prompt }
 
 # The prompt indicators are environmental variables that represent
@@ -113,12 +114,14 @@ $env.ENV_CONVERSIONS = {
 
 # Directories to search for scripts when calling source or use
 $env.NU_LIB_DIRS = [
-    # ($nu.default-config-dir | path join 'scripts') # add <nushell-config-dir>/scripts
+    # FIXME: This default is not implemented in rust code as of 2023-09-06.
+    ($nu.default-config-dir | path join 'scripts') # add <nushell-config-dir>/scripts
 ]
 
 # Directories to search for plugin binaries when calling register
 $env.NU_PLUGIN_DIRS = [
-    # ($nu.default-config-dir | path join 'plugins') # add <nushell-config-dir>/plugins
+    # FIXME: This default is not implemented in rust code as of 2023-09-06.
+    ($nu.default-config-dir | path join 'plugins') # add <nushell-config-dir>/plugins
 ]
 
 # To add entries to PATH (on Windows you might use Path), you can use the following pattern:

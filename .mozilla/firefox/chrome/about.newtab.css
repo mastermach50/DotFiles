@@ -1,0 +1,20 @@
+@-moz-document url("about:newtab") {
+    .top-site-outer .tile{
+        width: 60px !important;
+        height: 60px !important;
+        border-radius: 20% !important;
+    }
+
+    .top-site-outer .tile .icon-wrapper {
+        border-radius: 10% !important;
+    }
+
+    .search-wrapper .search-inner-wrapper {
+        width: 42rem !important;
+        /* min-width: 100px !important; */
+    }
+
+    .search-wrapper .search-handoff-button, .search-wrapper input {
+        border-radius: 100px !important;
+    }
+}
