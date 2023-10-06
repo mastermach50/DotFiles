@@ -781,6 +781,9 @@ alias sapt = sudo apt
 # Run snap as superuser
 alias ssnap = sudo snap 
 
+# Open NixOS config using lapce
+alias nixosconf = sudo lapce /etc/nixos/configuration.nix
+
 # Reload awesome
 alias awm-reload = awesome-client "awesome.restart()"
 

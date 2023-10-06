@@ -4,31 +4,33 @@
 
 def create_left_prompt [] {
     let home =  $nu.home-path
-    let hostname = (sys | hostname)
+    let hostname = (sys | get host | get hostname )
     mut username = ""
     mut platform = ""
-    let os_name = $nu.os-info.name
+    let os_name = (sys | get host | get name )
 
 
     # Find username
-    if $os_name == "windows" {
+    if $os_name == "Windows" {
         $username = $env.USERNAME
     } else {
         $username = $env.USER
     }
 
     # Set platform icon
-    if $os_name == "windows" {
+    if ($os_name == "Windows" ) {
         $platform = ""
-    } else if $os_name == "debian" {
-        $platform = ""
+    } else if ($os_name | str contains "Debian") {
+        $platform = ""
+    } else if ($os_name == "NixOS") {
+        $platform = ""
     } else {
-        $platform = ""
+        $platform = ""
     }
 
     # Detect WSL
     if ($nu.os-info.kernel_version | str downcase | str contains "wsl") {
-        $platform = ([$platform "(wsl)"] | str join)
+        $platform = ([$platform " (wsl)"] | str join)
     }
 
     # Find PWD and replace homepath with ~
@@ -63,20 +65,25 @@ def create_right_prompt [] {
         (ansi reset)
         (ansi magenta)
         (date now | format date '%x %X %p') # try to respect user's locale
-    ] | str join # | str replace --regex --all "([/:])" $"(ansi green)${1}(ansi magenta)" |
-        # str replace --regex --all "([AP]M)" $"(ansi magenta_underline)${1}")
+        ] | str join # | str replace --regex --all "([/:])" $"(ansi green)${1}(ansi magenta)" |
+            # str replace --regex --all "([AP]M)" $"(ansi magenta_underline)${1}")
     )
 
     # Last Exit Code
-    let last_exit_code = if ($env.LAST_EXIT_CODE != 0) {([
-        (ansi rb)
-        ($env.LAST_EXIT_CODE)
-    ] | str join)
+    let last_exit_code = if ($env.LAST_EXIT_CODE != 0) {
+        ([
+            (ansi rb)
+            ($env.LAST_EXIT_CODE)
+        ] | str join)
     } else { "" }
 
     # Execution time
     let duration = if (($env.CMD_DURATION_MS | into int) > 50) {
-        ($"($env.CMD_DURATION_MS)ms" | into duration)
+        ([
+            (ansi reset)
+            (ansi magenta)
+            ($"($env.CMD_DURATION_MS)ms" | into duration)
+        ] | str join)
     } else { "" }
 
     ([$last_exit_code, (char space), $duration, (char space), $time_segment] | str join)
