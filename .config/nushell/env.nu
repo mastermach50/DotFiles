@@ -2,13 +2,27 @@
 #
 # version = "0.85.0"
 
+def get_git_branch [] {
+    let git_out = do { git branch --show-current } | complete
+
+    if ( $git_out | get exit_code ) != 0 {
+        return ""
+    } else { 
+        return $"(ansi light_red)󰊢 ($git_out | get stdout | str trim )"
+    }
+}
+
 def create_left_prompt [] {
     let home =  $nu.home-path
-    let hostname = (sys | get host | get hostname )
+    let sys = sys
+    let hostname = ($sys | get host | get hostname )
     mut username = ""
     mut platform = ""
-    let os_name = (sys | get host | get name )
+    let os_name = ($sys | get host | get name )
+    let git_branch = ""
 
+    # Extra Features
+    let git_branch = get_git_branch
 
     # Find username
     if $os_name == "Windows" {
@@ -42,7 +56,7 @@ def create_left_prompt [] {
     # Add (Admin) to username if user is root
     let username = if (is-admin) {
             ([$username ($"(ansi red_bold)\(Admin\)")] | str join)
-    } else { $username }
+    }
 
     # Set the colors
     let path_color = (if (is-admin) { ansi light_red_bold } else { ansi light_blue_bold })
@@ -52,7 +66,7 @@ def create_left_prompt [] {
     let platform_color = (ansi light_yellow)
 
     # Create the prompt
-    let path_segment = $"(ansi reset)╭ ($env.SHELL) ($platform_color)($platform) ($user_color)($username)($hostname_color)@($hostname)(ansi reset):($path_color)($dir)(ansi reset)\n╰ "
+    let path_segment = $"(ansi reset)╭ ($env.SHELL) ($platform_color)($platform) ($user_color)($username)($hostname_color)@($hostname)(ansi reset):($path_color)($dir) ($git_branch)(ansi reset)\n╰ "
 
     # Not needed since $separator_color is same as $path_color
     #$path_segment | str replace --all (char path_sep) $"($separator_color)/($path_color)"
