@@ -54,19 +54,19 @@ def create_left_prompt [] {
     ] | str join)
 
     # Add (Admin) to username if user is root
-    let username = if (is-admin) {
-            ([$username ($"(ansi red_bold)\(Admin\)")] | str join)
+    if (is-admin) {
+            $username = ([$username ($"(ansi red_bold)\(Admin\)")] | str join)
     }
 
     # Set the colors
     let path_color = (if (is-admin) { ansi light_red_bold } else { ansi light_blue_bold })
     let separator_color = $path_color
-    let user_color = (ansi blue_bold)
+    let username_color = (ansi blue_bold)
     let hostname_color = (ansi green_bold)
     let platform_color = (ansi light_yellow)
 
     # Create the prompt
-    let path_segment = $"(ansi reset)╭ ($env.SHELL) ($platform_color)($platform) ($user_color)($username)($hostname_color)@($hostname)(ansi reset):($path_color)($dir) ($git_branch)(ansi reset)\n╰ "
+    let path_segment = $"(ansi reset)╭ ($env.SHELL) ($platform_color)($platform) ($username_color)($username)($hostname_color)@($hostname)(ansi reset):($path_color)($dir) ($git_branch)(ansi reset)\n╰ "
 
     # Not needed since $separator_color is same as $path_color
     #$path_segment | str replace --all (char path_sep) $"($separator_color)/($path_color)"
