@@ -1,15 +1,16 @@
-/* @import "about.newtab.css"; */
+@import "./colors.css";
+@import "./newtab.css";
 
+:root {
+    /* TST bg */
+    --browser-background: var(--dark-1000) !important;
 
-@media (prefers-color-scheme: dark) {
-    @-moz-document url-prefix("about:") {
-        button, input, .initialized, :host, :root {
-            --in-content-page-background: #222222 !important;
-            --in-content-box-background: #333333 !important;
-            --in-content-button-background: #333333 !important;
-            --in-content-button-background-hover: #444444 !important;
-            --in-content-table-background: #111111 !important;
-            --newtab-background-color-secondary: #333333 !important;
-        }
+    /* tabs */
+    --browser-selected-tab-bg: var(--dark-800) !important;
+}
+
+@-moz-document url-prefix("about:") {
+    html {
+        --in-content-page-background: var(--dark-900) !important;
     }
 }
