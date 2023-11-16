@@ -157,4 +157,5 @@ if $nu.os-info.name == "linux" {
 }
 
 # Zoxide
-zoxide init nushell | save -f ~/.zoxide.nu
+#TODO Remove after zoxide updates
+# zoxide init nushell | save -f ~/.zoxide.nu
