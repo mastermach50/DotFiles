@@ -1,6 +1,6 @@
 # Nushell Environment Config File
 #
-# version = "0.85.0"
+# version = "0.87.0"
 
 def get_git_branch [] {
     let git_out = do { git branch --show-current } | complete
