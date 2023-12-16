@@ -1,0 +1,9 @@
+live_config_reload = true
+
+[env]
+TERM = "alacritty"
+
+[window]
+decorations = "None"
+title = "zzzzzzzzzzz"
+dynamic_title = _false_
