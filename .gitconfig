@@ -1,0 +1,10 @@
+# This is Git's per-user configuration file.
+[user]
+# Please adapt and uncomment the following lines:
+	name = mastermach50
+	email = 64970593+mastermach50@users.noreply.github.com
+	signingkey = 5E25D65C3CCAC3AAC0999D8C2660381CBBA34BD8
+[gpg]
+	program = C:/Program Files (x86)/gnupg/bin/gpg.exe
+[commit]
+	gpgsign = true
