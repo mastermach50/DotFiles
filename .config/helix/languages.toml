@@ -1,3 +1,11 @@
+[language-server.nu-lsp]
+command = "nu"
+args = ["--lsp"]
+
 [[language]]
 name = "toml"
 formatter = { command = "taplo", args = ["fmt", "-"] }
+
+[[language]]
+name = "nu"
+language-servers = ["nu-lsp"]

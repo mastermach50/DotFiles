@@ -14,11 +14,11 @@ def get_git_branch [] {
 
 def create_left_prompt [] {
     let home =  $nu.home-path
-    let sys = sys
-    let hostname = ($sys | get host | get hostname )
+    let sys_static = sys
+    let hostname = ($sys_static | get host | get hostname )
     mut username = ""
     mut platform = ""
-    let os_name = ($sys | get host | get name )
+    let os_name = ($sys_static | get host | get name )
     let git_branch = ""
 
     # Extra Features
