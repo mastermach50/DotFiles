@@ -2,8 +2,6 @@
 #
 # version = "0.88.2"
 
-# version = "0.87.0"
-
 def get_git_branch [] {
     let git_out = do { git branch --show-current } | complete
 
@@ -49,11 +47,22 @@ def create_left_prompt [] {
         $platform = ([$platform " (wsl)"] | str join)
     }
 
-    # Find PWD and replace homepath with ~
-    let dir = ([
-        ($env.PWD | str substring 0..($home | str length) | str replace $home "~"),
-        ($env.PWD | str substring ($home | str length)..)
-    ] | str join)
+
+    # Perform tilde substitution on dir
+    # To determine if the prefix of the path matches the home dir, we split the current path into
+    # segments, and compare those with the segments of the home dir. In cases where the current dir
+    # is a parent of the home dir (e.g. `/home`, homedir is `/home/user`), this comparison will
+    # also evaluate to true. Inside the condition, we attempt to str replace `$home` with `~`.
+    # Inside the condition, either:
+    # 1. The home prefix will be replaced
+    # 2. The current dir is a parent of the home dir, so it will be uneffected by the str replace
+    let dir = (
+        if ($env.PWD | path split | zip ($home | path split) | all { $in.0 == $in.1 }) {
+            ($env.PWD | str replace $home "~")
+        } else {
+            $env.PWD
+        }
+    )
 
     # Add (Admin) to username if user is root
     if (is-admin) {
@@ -68,11 +77,11 @@ def create_left_prompt [] {
     let platform_color = (ansi light_yellow)
 
     # Create the prompt
-    let path_segment = $"(ansi reset)╭ ($env.SHELL) ($platform_color)($platform) ($username_color)($username)($hostname_color)@($hostname)(ansi reset):($path_color)($dir) ($git_branch)(ansi reset)\n╰ "
+    let prompt_str = $"(ansi reset)╭ ($env.SHELL) ($platform_color)($platform) ($username_color)($username)($hostname_color)@($hostname)(ansi reset):($path_color)($dir) ($git_branch)(ansi reset)\n╰ "
 
     # Not needed since $separator_color is same as $path_color
     #$path_segment | str replace --all (char path_sep) $"($separator_color)/($path_color)"
-    $path_segment
+    $prompt_str
 }
 
 def create_right_prompt [] {
@@ -90,7 +99,7 @@ def create_right_prompt [] {
         ($env.LAST_EXIT_CODE)
     ] | str join)
     } else { "" }
-
+    
     # Execution time
     let duration = if (($env.CMD_DURATION_MS | into int) > 50) {
         ([
@@ -123,12 +132,12 @@ $env.PROMPT_MULTILINE_INDICATOR = {|| "::: " }
 # This can be useful if you have a 2-line prompt and it's taking up a lot of space
 # because every command entered takes up 2 lines instead of 1. You can then uncomment
 # the line below so that previously entered commands show with a single `🚀`.
-# $env.TRANSIENT_PROMPT_COMMAND = {|| "🚀 " }
+$env.TRANSIENT_PROMPT_COMMAND = {|| $"(ansi light_blue_bold)nu(ansi reset)" }
 # $env.TRANSIENT_PROMPT_INDICATOR = {|| "" }
 # $env.TRANSIENT_PROMPT_INDICATOR_VI_INSERT = {|| "" }
 # $env.TRANSIENT_PROMPT_INDICATOR_VI_NORMAL = {|| "" }
 # $env.TRANSIENT_PROMPT_MULTILINE_INDICATOR = {|| "" }
-# $env.TRANSIENT_PROMPT_COMMAND_RIGHT = {|| "" }
+$env.TRANSIENT_PROMPT_COMMAND_RIGHT = {|| "" }
 
 # Specifies how environment variables are:
 # - converted from a string to a value on Nushell startup (from_string)
@@ -143,6 +152,11 @@ $env.ENV_CONVERSIONS = {
         from_string: { |s| $s | split row (char esep) | path expand --no-symlink }
         to_string: { |v| $v | path expand --no-symlink | str join (char esep) }
     }
+}
+
+# TEMP FIX
+if $nu.os-info.name == "windows" {
+    $env.Path = (do $env.ENV_CONVERSIONS.Path.from_string $env.path)
 }
 
 # Directories to search for scripts when calling source or use
@@ -169,7 +183,6 @@ if $nu.os-info.name == "linux" {
 }
 
 # Zoxide
-#TODO Remove after zoxide updates
 zoxide init nushell | save -f ~/.zoxide.nu
 
 # Carapace
