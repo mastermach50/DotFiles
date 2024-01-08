@@ -154,11 +154,6 @@ $env.ENV_CONVERSIONS = {
     }
 }
 
-# TEMP FIX
-if $nu.os-info.name == "windows" {
-    $env.Path = (do $env.ENV_CONVERSIONS.Path.from_string $env.path)
-}
-
 # Directories to search for scripts when calling source or use
 # The default for this is $nu.default-config-dir/scripts
 $env.NU_LIB_DIRS = [
